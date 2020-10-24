@@ -48,9 +48,10 @@ class WindowClass(Ui_MainWindow) :
                 QMessageBox.about(self, "Warning", "문단 파일을 먼저 선택하세요.")
                 return
                 
-            if(self.edit_period.text() == ''):# or int(self.edit_period.text()) < 5 ):
+            if(self.edit_period.text() == '' or int(self.edit_period.text()) < 5 ):
                 QMessageBox.about(self, "Warning", "게시 주기는 최소 5분 이상 설정할 수 있습니다..")
                 return
+                
             QMessageBox.about(self, "자동 게시 시작", "자동 글쓰기를 시작합니다.")
             self.button_write.setText("자동 등록 중")
             self.button_write.setStyleSheet(staticValues.redButtonStyleSheet)

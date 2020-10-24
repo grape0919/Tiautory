@@ -187,7 +187,7 @@ class SeleniumBlogger(HeadOfBlogger):
             except:
                 print("alert 창 없음")
 
-            self.driver.find_element_by_xpath("/html/body/div[2]/div/div[3]/div[2]/textarea").send_keys(article[0])
+            self.driver.find_element_by_class_name("textarea_tit").send_keys(article[0])
             
             iframes = self.driver.find_elements_by_tag_name('iframe')
 
