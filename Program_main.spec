@@ -7,9 +7,7 @@ pf_foldr='C:\\Users\\DELL\\PLAYGROUND\\Anaconda3\\envs\\py37_32\\Library\\plugin
 
 a = Analysis(['Program_main.py'],
              pathex=['C:\\Users\\DELL\\PLAYGROUND\\hkdevstudio\\Tiautory'],
-             binaries=[(pf_foldr+'qwindows.dll', 'platforms'),
-             (pf_foldr+'qdirect2d.dll', 'platforms'),
-             (pf_foldr+'qoffscreen.dll', 'platforms')],
+             binaries=[],
              datas=[('./img','.'),
                     ('./lib/*.exe','./lib'),
                     ('./nohand','./blogInfo.properties')],
