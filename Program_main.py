@@ -10,13 +10,18 @@ import static.staticValues as staticValues
 class WindowClass(Ui_MainWindow) :
 
     running = False
+    login = False
 
     def __init__(self) :
         super(WindowClass, self).__init__()
         self.setupUi(self)
         
         self.button_file.clicked.connect(self.showFileDialog)
+        
+        self.button_login.clicked.connect(self.login)
+
         self.button_write.clicked.connect(self.writeArticle)
+        self.button_write.setEnabled(False)
 
         self.prop = selProp()
         # self.prop = ApiProp()
@@ -26,6 +31,29 @@ class WindowClass(Ui_MainWindow) :
 
         self.blogger = SeleniumBlogger()
 
+    def login(self):
+        self.prop.url = self.edit_url.text()
+        self.prop.id = self.edit_id.text()
+        self.prop.passwd = self.edit_passwd.text()
+        self.prop.save()
+        
+        self.blogger.setProp(self.prop)
+
+        checkLogin = self.blogger.login()
+
+        if(checkLogin):
+            self.login = True
+            QMessageBox.about(self, "로그인", "로그인에 성공하였습니다.")
+            self.button_login.setStyleSheet(staticValues.grayButtonStyleSheet)
+            self.button_login.setEnabled(False)
+            self.button_write.setStyleSheet(staticValues.blueButtonStyleSheet)
+            self.button_write.setEnabled(True)
+        else:
+            self.login = False
+            QMessageBox.about(self, "로그인", "로그인 실패하였습니다.\nurl, id, password 를 확인해주세요.")
+            self.button_login.setStyleSheet(staticValues.redButtonStyleSheet)
+            self.button_write.setStyleSheet(staticValues.grayButtonStyleSheet)
+            self.button_write.setEnabled(False)
 
     def showFileDialog(self):
         print("Clicked button")
@@ -48,21 +76,17 @@ class WindowClass(Ui_MainWindow) :
                 QMessageBox.about(self, "Warning", "문단 파일을 먼저 선택하세요.")
                 return
                 
-            if(self.edit_period.text() == '' or int(self.edit_period.text()) < 5 ):
+            if(self.edit_period.text() == ''):# or int(self.edit_period.text()) < 5 ):
                 QMessageBox.about(self, "Warning", "게시 주기는 최소 5분 이상 설정할 수 있습니다..")
                 return
                 
             QMessageBox.about(self, "자동 게시 시작", "자동 글쓰기를 시작합니다.")
             self.button_write.setText("자동 등록 중")
             self.button_write.setStyleSheet(staticValues.redButtonStyleSheet)
-            self.running = True
 
-            self.prop.url = self.edit_url.text()
-            self.prop.id = self.edit_id.text()
-            self.prop.passwd = self.edit_passwd.text()
-            self.prop.save()
-            
-            self.blogger.setProp(self.prop, self.dateTime_upload.dateTime() ,int(self.edit_period.text()))
+            self.blogger.setDate(self.dateTime_upload.dateTime() ,int(self.edit_period.text()))
+
+            self.running = True
 
             self.blogger.readExcelFile(self.edit_filePath.text())
             suc = self.blogger.postArticle()

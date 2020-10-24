@@ -56,6 +56,18 @@ class Ui_MainWindow(QMainWindow):
         font = QFont()
         font.setFamily("NanumGothic")
         self.button_file.setFont(font)
+
+        self.button_login = QPushButton(self.centralwidget)
+        self.button_login.setGeometry(QRect(630, 210, 93, 28))
+        
+        #버튼 스타일 변경
+        self.button_login.setStyleSheet(staticValues.blueButtonStyleSheet)
+        self.button_login.setFont(staticValues.buttonFont)
+
+        font = QFont()
+        font.setFamily("NanumGothic")
+        self.button_login.setFont(font)
+        
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setGeometry(QRect(60, 132, 100, 15))
         font = QFont()
@@ -99,14 +111,14 @@ class Ui_MainWindow(QMainWindow):
         font.setWeight(50)
         self.label_7.setFont(font)
         self.dateTime_upload = QDateTimeEdit(self.centralwidget)
-        self.dateTime_upload.setGeometry(QRect(180, 310, 194, 22))
+        self.dateTime_upload.setGeometry(QRect(200, 310, 194, 22))
 
         #오늘 날짜 세팅
         self.dateTime_upload.setDate(QDate.currentDate())
         self.dateTime_upload.setTime(QTime.currentTime())
-        print(QTime.currentTime().addSecs(60))
+        
         self.edit_period = QLineEdit(self.centralwidget)
-        self.edit_period.setGeometry(QRect(180, 350, 113, 21))
+        self.edit_period.setGeometry(QRect(200, 350, 90, 21))
 
         #가로/세로 입력창 숫자만 입력하도록 수정
         self.edit_period.setValidator(QIntValidator(1, 1440))
@@ -117,9 +129,10 @@ class Ui_MainWindow(QMainWindow):
         self.button_write.setGeometry(QRect(180, 400, 391, 28))
 
         #버튼 스타일 변경
-        self.button_write.setStyleSheet(staticValues.blueButtonStyleSheet)
+        self.button_write.setStyleSheet(staticValues.grayButtonStyleSheet)
         self.button_write.setFont(staticValues.buttonFont)
-
+        self.button_write.setEnabled(False)
+        
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -129,6 +142,7 @@ class Ui_MainWindow(QMainWindow):
         self.label.setText("TISAUTORY")
         self.edit_filePath.setPlaceholderText("문단 파일 경로")
         self.button_file.setText("파일 열기")
+        self.button_login.setText("로그인")
         self.label_2.setText("URL")
         self.label_3.setText("ID")
         self.label_4.setText("PASSWORD")

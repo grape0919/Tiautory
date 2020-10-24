@@ -60,7 +60,6 @@ class ApiBlogger(HeadOfBlogger):
         if(article is not None):
             result = ''
             for idx in range(len(article)):
-                # print("!@#!@# : ", article[idx])
                 if article[idx].startswith("<img"):
                     imgNumber = article[idx].split("=")[1]
                     imgNumber = imgNumber[0:len(imgNumber)]
@@ -129,28 +128,35 @@ class SeleniumBlogger(HeadOfBlogger):
         self.driver = wb.Chrome(executable_path='lib/chromedriver.exe', chrome_options=options)
         self.driver.implicitly_wait(10)
 
-    def setProp(self, prop, qDateTime, period):
-        self.url = prop.url
-        self.id = prop.id
-        self.passwd = prop.passwd
-
-        self.datetime = qDateTime
-        self.period = period*60
-
-    def postArticle(self):
-        self.running = True
-
-        try:
-            if(self.url.endswith(".com")):
-                self.url += "/"
-        
+    def login(self):
+        try:        
             self.driver.get(self.url + "manage/entry/post")
             self.driver.find_element_by_id("loginId").send_keys(self.id)
             self.driver.find_element_by_id("loginPw").send_keys(self.passwd)
 
             self.driver.find_element_by_class_name("btn_login").click()
+            return True
         except:
-            return (False, "로그인 실패하였습니다.\nurl, id, password 를 확인해주세요.")
+            return False
+
+    def setProp(self, prop):
+        
+        self.url = prop.url
+        if(self.url.endswith(".com")):
+            self.url += "/"
+
+
+        self.id = prop.id
+        self.passwd = prop.passwd
+
+
+    def setDate(self, qDateTime, period):
+        self.datetime = qDateTime
+        self.period = period*60
+
+
+    def postArticle(self):
+        self.running = True
 
         th = threading.Thread(target=self.postingThread, args=())
         th.start()
@@ -162,14 +168,14 @@ class SeleniumBlogger(HeadOfBlogger):
             gap = self.datetime.secsTo(QDateTime.currentDateTime())
             print("gap : ", gap)
             if(gap < 0):
-                print("1wait for ", (gap*-1))
-                time.sleep(gap*-1)
+                print("1wait for ", 1)
+                time.sleep(1)
                 continue
             elif(gap >= 0):
                 temp = gap%self.period
                 if(temp > 0):
-                    print("1wait for ", self.period-temp)
-                    time.sleep(self.period-temp)
+                    print("1wait for ", 1)
+                    time.sleep(1)
                     continue
                 elif(temp == 0):
                     print("게시")
@@ -179,7 +185,7 @@ class SeleniumBlogger(HeadOfBlogger):
     def post(self):
         article = self.makeArticle()
         if(article is not None):
-            self.driver.get(self.url + "/manage/entry/post")
+            self.driver.get(self.url + "manage/entry/post")
             try:
                 time.sleep(1)
                 alert = self.driver.switch_to.alert
