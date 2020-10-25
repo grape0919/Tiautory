@@ -133,6 +133,15 @@ class Ui_MainWindow(QMainWindow):
         self.button_write.setFont(staticValues.buttonFont)
         self.button_write.setEnabled(False)
         
+        self.label_countdown = QLabel(self.centralwidget)
+        font = QFont()
+        font.setFamily("NanumGothic")
+        font.setBold(False)
+        font.setWeight(10)
+        self.label_countdown.setFont(font)
+        self.label_countdown.setText(str(0))
+        self.label_countdown.setGeometry(QRect(610, 400, 50, 22))
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)

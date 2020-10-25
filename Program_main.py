@@ -29,7 +29,7 @@ class WindowClass(Ui_MainWindow) :
         self.edit_id.setText(self.prop.id)
         self.edit_passwd.setText(self.prop.passwd)
 
-        self.blogger = SeleniumBlogger()
+        self.blogger = SeleniumBlogger(self.label_countdown)
 
     def login(self):
         self.prop.url = self.edit_url.text()
@@ -108,6 +108,9 @@ class WindowClass(Ui_MainWindow) :
     def closeEvent(self, event):
        self.running = False
        self.blogger.running = False
+       if(self.blogger.postThread is not None):
+           self.blogger.postThread.join()
+           
        event.accept()
         
 

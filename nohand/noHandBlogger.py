@@ -118,7 +118,11 @@ class SeleniumBlogger(HeadOfBlogger):
     datetime = None
     period = 0
 
-    def __init__(self):        
+    countDownUI = None
+
+    postThread = None
+
+    def __init__(self, countDownUI):        
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'}
         options = wb.ChromeOptions()
         options.add_argument('headless')
@@ -127,6 +131,8 @@ class SeleniumBlogger(HeadOfBlogger):
 
         self.driver = wb.Chrome(executable_path='lib/chromedriver.exe', chrome_options=options)
         self.driver.implicitly_wait(10)
+
+        self.countDownUI = countDownUI
 
     def login(self):
         try:        
@@ -158,27 +164,30 @@ class SeleniumBlogger(HeadOfBlogger):
     def postArticle(self):
         self.running = True
 
-        th = threading.Thread(target=self.postingThread, args=())
-        th.start()
+        try:
+            self.postThread = threading.Thread(target=self.postingThread, args=())
 
+            self.postThread.start()
+        except:
+            return (False, "포스팅 시작에 실패하였습니다. \n 지속적으로 오류 발생시 개발자에게 문의하세요. \n ghdry2563@gmail.com")
+
+        return None
 
     def postingThread(self):
         print("Blogger start posting")
         while(self.running):
             gap = self.datetime.secsTo(QDateTime.currentDateTime())
-            print("gap : ", gap)
+            countDown = self.period-(gap%self.period)
+            self.countDownUI.setText(str(countDown))
             if(gap < 0):
-                print("1wait for ", 1)
                 time.sleep(1)
                 continue
             elif(gap >= 0):
                 temp = gap%self.period
                 if(temp > 0):
-                    print("1wait for ", 1)
                     time.sleep(1)
                     continue
                 elif(temp == 0):
-                    print("게시")
                     time.sleep(5)
                     self.post()
                     
@@ -207,7 +216,6 @@ class SeleniumBlogger(HeadOfBlogger):
                     self.driver.find_element_by_id("mceu_32").click()
                     self.driver.find_element_by_id("openFile").send_keys(imgFilePath)
                     self.driver.switch_to_frame(iframes[0])
-                    self.driver.find_element_by_id("tinymce").send_keys(imgFilePath)
                     self.driver.find_element_by_id("tinymce").send_keys(Keys.ENTER)
                     self.driver.switch_to_default_content()
 
