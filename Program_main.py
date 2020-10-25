@@ -76,7 +76,7 @@ class WindowClass(Ui_MainWindow) :
                 QMessageBox.about(self, "Warning", "문단 파일을 먼저 선택하세요.")
                 return
                 
-            if(self.edit_period.text() == ''):# or int(self.edit_period.text()) < 5 ):
+            if(self.edit_period.text() == '' or int(self.edit_period.text()) < 5 ):
                 QMessageBox.about(self, "Warning", "게시 주기는 최소 5분 이상 설정할 수 있습니다..")
                 return
                 
