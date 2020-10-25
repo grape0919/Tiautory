@@ -1,16 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
-import sys
-sys.setrecursionlimit(10000)
+
 block_cipher = None
 
-pf_foldr='C:\\Users\\DELL\\PLAYGROUND\\Anaconda3\\envs\\py37_32\\Library\\plugins\\platforms\\'
 
 a = Analysis(['Program_main.py'],
              pathex=['C:\\Users\\DELL\\PLAYGROUND\\hkdevstudio\\Tiautory'],
              binaries=[],
-             datas=[('./img','.'),
+             datas=[('./img/*','./img'),
                     ('./lib/*.exe','./lib'),
-                    ('./nohand','./blogInfo.properties')],
+                    ('./nohand/*.properties','./nohand'),
+                    ('./*.xlsx','./')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
