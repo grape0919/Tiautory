@@ -109,8 +109,8 @@ class WindowClass(Ui_MainWindow) :
        self.running = False
        self.blogger.running = False
        if(self.blogger.postThread is not None):
-           self.blogger.postThread.join()
-           
+            self.blogger.postThread.join()
+            self.blogger.driver.close()
        event.accept()
         
 
