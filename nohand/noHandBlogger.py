@@ -131,17 +131,21 @@ class SeleniumBlogger(HeadOfBlogger):
 
         self.driver = wb.Chrome(executable_path='lib/chromedriver.exe', chrome_options=options)
         self.driver.implicitly_wait(10)
-
         self.countDownUI = countDownUI
 
     def login(self):
         try:        
-            self.driver.get(self.url + "manage/entry/post")
+            self.driver.get("https://www.tistory.com/auth/login/old?redirectUrl="+self.url + "manage/entry/post")
             self.driver.find_element_by_id("loginId").send_keys(self.id)
             self.driver.find_element_by_id("loginPw").send_keys(self.passwd)
 
             self.driver.find_element_by_class_name("btn_login").click()
-            return True
+
+            succeedCheck = self.driver.find_element_by_class_name("textarea_tit")
+            if succeedCheck != None:
+                return True
+            else :
+                return False
         except:
             return False
 
@@ -216,6 +220,7 @@ class SeleniumBlogger(HeadOfBlogger):
                     self.driver.find_element_by_id("mceu_32").click()
                     self.driver.find_element_by_id("openFile").send_keys(imgFilePath)
                     self.driver.switch_to_frame(iframes[0])
+                    self.driver.find_element_by_id("tinymce").send_keys(Keys.ENTER)
                     self.driver.find_element_by_id("tinymce").send_keys(Keys.ENTER)
                     self.driver.switch_to_default_content()
 
