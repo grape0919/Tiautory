@@ -125,7 +125,7 @@ class SeleniumBlogger(HeadOfBlogger):
     def __init__(self, countDownUI):        
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.90 Safari/537.36'}
         options = wb.ChromeOptions()
-        options.add_argument('headless')
+        # options.add_argument('headless')
         options.add_argument('window-size=1920x1080')
         options.add_argument("disable-gpu")
 
@@ -135,12 +135,16 @@ class SeleniumBlogger(HeadOfBlogger):
 
     def login(self):
         try:        
-            self.driver.get("https://www.tistory.com/auth/login/old?redirectUrl="+self.url + "manage/entry/post")
-            self.driver.find_element_by_id("loginId").send_keys(self.id)
-            self.driver.find_element_by_id("loginPw").send_keys(self.passwd)
-
-            self.driver.find_element_by_class_name("btn_login").click()
-
+            # 'https://accounts.kakao.com/login?continue=https%3A%2F%2Fkauth.kakao.com%2Foauth%2Fauthorize%3Fis_popup%3Dfalse%26ka%3Dsdk%252F1.39.10%2520os%252Fjavascript%2520sdk_type%252Fjavascript%2520lang%252Fko-KR%2520device%252FWin32%2520origin%252Fhttps%25253A%25252F%25252Fwww.tistory.com%26auth_tran_id%3Dap6coarueilb8aef3eeb03fa312b81795386484f051kjhpicy1%26response_type%3Dcode%26state%3DaHR0cHM6Ly9ubHBzdHVkeS50aXN0b3J5LmNvbS9tYW5hZ2U%26redirect_uri%3Dhttps%253A%252F%252Fwww.tistory.com%252Fauth%252Fkakao%252Fredirect%26client_id%3Db8aef3eeb03fa312b81795386484f051'
+            self.driver.get(self.url + "manage/newpost")
+            
+            self.driver.find_element_by_class_name("link_kakao_id").click()
+            time.sleep(3)
+            self.driver.find_element_by_id("id_email_2").send_keys(self.id)
+            self.driver.find_element_by_id("id_password_3").send_keys(self.passwd)
+            time.sleep(3)
+            self.driver.find_element_by_xpath("/html/body/div[1]/div[2]/div/div/div/div/div[2]/div/form/fieldset/div[8]/button[1]").click()
+            time.sleep(3)
             succeedCheck = self.driver.find_element_by_class_name("textarea_tit")
             if succeedCheck != None:
                 return True
