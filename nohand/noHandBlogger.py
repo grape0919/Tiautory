@@ -3,8 +3,15 @@ from openpyxl import load_workbook
 import random
 import requests
 import os
+import psutil
 
+import sys
+import warnings
+warnings.simplefilter("ignore", UserWarning)
+sys.coinit_flags = 2
 
+from pywinauto.application import Application
+import pywinauto
 class HeadOfBlogger:
 
     def __init__(self, prop):
@@ -20,6 +27,26 @@ class HeadOfBlogger:
             self.phList = list(map(list, zip(*mylist)))
             break
 
+        self.isLoaded = True
+
+    def setDir(self, dirpath):
+        print("set dir path : ", dirpath)
+        self.dirpath = dirpath
+        self.datePath = []
+        years = os.listdir(dirpath)
+
+        for year in years:
+            if year != 'etc':
+                yearPath = os.path.join(dirpath,year)
+                months = os.listdir(yearPath)
+                for month in months:
+                    monthPath = os.path.join(yearPath, month)
+                    days = os.listdir(monthPath)
+                    for day in days:
+                        date = os.path.join(monthPath, day).replace('\\','/')
+                        self.datePath.append(date)
+        
+        self.index = 0
         self.isLoaded = True
 
     def makeArticle(self):
@@ -139,13 +166,17 @@ class SeleniumBlogger(HeadOfBlogger):
             self.driver.get(self.url + "manage/newpost")
             
             self.driver.find_element_by_class_name("link_kakao_id").click()
-            time.sleep(3)
+            time.sleep(1)
             self.driver.find_element_by_id("id_email_2").send_keys(self.id)
             self.driver.find_element_by_id("id_password_3").send_keys(self.passwd)
-            time.sleep(3)
+            time.sleep(1)
             self.driver.find_element_by_xpath("/html/body/div[1]/div[2]/div/div/div/div/div[2]/div/form/fieldset/div[8]/button[1]").click()
-            time.sleep(3)
+            time.sleep(1)
             succeedCheck = self.driver.find_element_by_class_name("textarea_tit")
+
+            process = psutil.Process(self.driver.service.process.pid)
+            self.pid = process.children()[0].pid
+
             if succeedCheck != None:
                 return True
             else :
@@ -168,6 +199,18 @@ class SeleniumBlogger(HeadOfBlogger):
         self.datetime = qDateTime
         self.period = period*60
 
+
+    def postPicture(self):
+        self.running = True
+
+        try:
+            self.postThread = threading.Thread(tartget=self.postingThread, args=())
+
+            self.postThread.start()
+        except:
+            return (False, "포스팅 시작에 실패하였습니다.")
+        
+        return None
 
     def postArticle(self):
         self.running = True
@@ -197,8 +240,51 @@ class SeleniumBlogger(HeadOfBlogger):
                     continue
                 elif(temp == 0):
                     time.sleep(5)
-                    self.post()
-                    
+                    self.post2()
+                    self.index = self.index + 1
+                    if self.index == len(self.datePath):
+                        self.running = False
+
+    def post2(self):
+
+        self.driver.get(self.url + "manage/entry/post")
+        try:
+            time.sleep(1)
+            alert = self.driver.switch_to.alert
+            alert.dismiss()
+        except:
+            print("alert 창 없음")
+
+        date = self.datePath[self.index]
+        title = ''.join(date.split('/')[-3:])
+        self.driver.find_element_by_class_name("textarea_tit").send_keys(title)
+        
+        iframes = self.driver.find_elements_by_tag_name('iframe')
+
+        images = os.listdir(date)
+        for image in images:
+            imgFilePath = os.path.join(date, image)
+            self.driver.find_element_by_id("mceu_0-open").click()
+            self.driver.find_element_by_id("mceu_32").click()
+            self.driver.find_element_by_id("openFile").send_keys(imgFilePath)
+
+
+            app = Application()
+            # app.connect(process=self.pid)
+            windowHandle = pywinauto.findwindows.find_windows(title=u'Open', class_name='#32770')[0]
+            window = app.window_(handle=windowHandle)
+            # dialog = app.top_window_()
+            # dialog['&OpenButton'].Click()
+            window["취소"].Click()
+
+            self.driver.switch_to_frame(iframes[0])
+            self.driver.find_element_by_id("tinymce").send_keys(Keys.ENTER)
+            self.driver.find_element_by_id("tinymce").send_keys(Keys.ENTER)
+            self.driver.switch_to_default_content()
+
+        self.driver.find_element_by_xpath("/html/body/div[1]/div/div[4]/div[3]/button").click()
+        self.driver.find_element_by_xpath("/html/body/div[6]/div/div/div/form/fieldset/div[3]/div/button[2]").click()
+
     def post(self):
         article = self.makeArticle()
         if(article is not None):

@@ -57,11 +57,12 @@ class WindowClass(Ui_MainWindow) :
 
     def showFileDialog(self):
         print("Clicked button")
-        fname = QFileDialog.getOpenFileName(self, 'Open excel for paragraph', 'Desktop',
-                                            "Excel (*.xls *.xlsx)")
-        if fname[0]:
-            self._filePath = fname[0]
-            self.edit_filePath.setText(fname[0])
+        fname = QFileDialog.getExistingDirectory(self, 'Open excel for paragraph', 'Desktop')
+        if fname:
+            self._filePath = fname
+            self.edit_filePath.setText(fname)
+
+            self.blogger.setDir(self.edit_filePath.text())
 
     def writeArticle(self):
         print("Clicked write button")
@@ -76,8 +77,8 @@ class WindowClass(Ui_MainWindow) :
                 QMessageBox.about(self, "Warning", "문단 파일을 먼저 선택하세요.")
                 return
                 
-            if(self.edit_period.text() == '' or int(self.edit_period.text()) < 5 ):
-                QMessageBox.about(self, "Warning", "게시 주기는 최소 5분 이상 설정할 수 있습니다..")
+            if(self.edit_period.text() == '' or int(self.edit_period.text()) < 1 ):
+                QMessageBox.about(self, "Warning", "게시 주기는 최소 1분 이상 설정할 수 있습니다..")
                 return
                 
             QMessageBox.about(self, "자동 게시 시작", "자동 글쓰기를 시작합니다.")
@@ -88,7 +89,8 @@ class WindowClass(Ui_MainWindow) :
 
             self.running = True
 
-            self.blogger.readExcelFile(self.edit_filePath.text())
+            # self.blogger.readExcelFile(self.edit_filePath.text())
+            
             suc = self.blogger.postArticle()
             
             if(suc is not None and not suc[0]):
